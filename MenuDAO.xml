@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycafe.menu.MenuService">
+
+<!-- DB와 변수연결 -->
+<resultMap type="com.mycafe.menu.NutritionDTO" id="ndto">
+	<result property="num" column="num"/>
+	<result property="calorie" column="calorie"/>
+	<result property="saturated_fat" column="saturated_fat"/>
+	<result property="protein" column="protein"/>
+	<result property="natrium" column="natrium"/>
+	<result property="sugar" column="sugar"/>
+	<result property="caffeine" column="caffeine"/>
+</resultMap>
+
+<resultMap type="com.mycafe.menu.MenuDTO" id="mdto">
+	<result property="num" column="num"/>
+	<result property="picture" column="picture"/>
+	<result property="cafe" column="cafe"/>
+	<result property="sort" column="sort"/>
+	<result property="product" column="product"/>
+	<result property="explain" column="explain"/>
+	<collection property="ndto" resultMap="ndto"></collection>
+</resultMap>
+<!-- DB와 변수연결 종료 -->
+
+<!-- 메뉴등록 -->
+<insert id="menu_enroll" parameterType="com.mycafe.menu.MenuDTO">
+	<selectKey keyProperty="num" resultType="int" order="BEFORE">
+		SELECT NVL(MAX(NUM), 0)+1 FROM CAFE_MENU	
+	</selectKey>
+	INSERT INTO CAFE_MENU VALUES(#{num}, #{picture}, #{cafe}, #{sort}, #{product}, #{explain})
+</insert>
+<insert id="nutrition_enroll">
+	INSERT INTO CAFE_NUTRITION VALUES(#{param1}, #{param2}, #{param3}, #{param4}, #{param5}, #{param6}, #{param7})
+</insert>
+<!-- 메뉴등록 종료 -->
+
+<!-- 메뉴목록 -->
+<select id="menu_list" resultMap="mdto">
+	SELECT ME.NUM, ME.PICTURE, ME.CAFE, ME.PRODUCT  
+	FROM CAFE_MENU ME JOIN CAFE_NUTRITION NU ON ME.NUM=NU.NUM 
+	WHERE ME.CAFE=#{param1} AND ME.SORT=#{param2}
+	ORDER BY ME.NUM DESC
+</select>
+<!-- 메뉴목록 종료 -->
+
+<!-- 메뉴상세 -->
+<select id="menu_detail" resultMap="mdto">
+	SELECT ME.NUM, ME.PICTURE, ME.CAFE, ME.SORT, ME.PRODUCT, ME.EXPLAIN, NU.CALORIE, NU.SATURATED_FAT, NU.PROTEIN, NU.NATRIUM, NU.SUGAR, NU.CAFFEINE 
+	FROM CAFE_MENU ME JOIN CAFE_NUTRITION NU ON ME.NUM=NU.NUM 
+	WHERE ME.NUM=#{param1}
+</select>
+<!-- 메뉴상세 종료 -->
+
+<!-- 메뉴삭제 -->
+<delete id="menu_delete">
+	DELETE FROM CAFE_MENU WHERE NUM=#{param1}
+</delete>
+<delete id="nutrition_delete">
+	DELETE FROM CAFE_NUTRITION WHERE NUM=#{param1}
+</delete>
+<!-- 메뉴삭제 종료 -->
+
+<!-- 메뉴수정 -->
+<update id="menu_modify">
+	UPDATE CAFE_MENU SET CAFE=#{param1}, SORT=#{param2}, PRODUCT=#{param3}, EXPLAIN=#{param4} WHERE NUM=#{param5}
+</update>
+<update id="nutrition_modify">
+	UPDATE CAFE_NUTRITION SET CALORIE=#{param1}, SATURATED_FAT=#{param2}, PROTEIN=#{param3}, NATRIUM=#{param4}, SUGAR=#{param5}, CAFFEINE=#{param6} WHERE NUM=#{param7}
+</update>
+<update id="image_modify">
+	UPDATE CAFE_MENU SET PICTURE=#{param1} WHERE NUM=#{param2}
+</update>
+<!-- 메뉴수정 종료 -->
+
+<!-- 메인화면 신메뉴 이미지 -->
+<select id="main_newmenu" resultMap="mdto">
+	SELECT NUM, PICTURE, PRODUCT FROM(
+		SELECT ROWNUM rn, S.* from(
+			SELECT NUM, PICTURE, PRODUCT FROM CAFE_MENU WHERE CAFE=#{param1} ORDER BY NUM DESC)S)
+	WHERE rn=1
+</select>
+<!-- 메인화면 신메뉴 이미지 종료 -->
+
+<!-- 레시피 이미지 -->
+<select id="recipe" resultMap="mdto">
+	SELECT NUM, PICTURE, PRODUCT FROM CAFE_MENU WHERE NUM=#{param1}
+</select>
+<!-- 레시피 이미지 종료-->
+</mapper>

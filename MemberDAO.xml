@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycafe.member.MemberService">
+
+<!-- DB와 변수연결 -->
+<resultMap type="com.mycafe.member.MemberDTO" id="mdto">
+	<result property="num" column="num"/>
+	<result property="id" column="id"/>
+	<result property="pw" column="pw"/>
+	<result property="name" column="name"/>
+	<result property="birthday" column="birthday"/>
+	<result property="phon" column="phon"/>
+	<result property="email" column="email"/>
+</resultMap>
+
+<!-- 회원가입 -->
+<insert id="application_enroll">
+	INSERT INTO CAFE_MEMBER VALUES(CAFE_MEMBER_SEQ.NEXTVAL, #{param1}, #{param2}, #{param3}, #{param4}, #{param5}, #{param6})
+</insert>
+<!-- 로그인 -->
+<select id="login" resultMap="mdto">
+	SELECT ID, NAME FROM CAFE_MEMBER WHERE ID=#{param1} AND PW=#{param2}
+</select>
+
+</mapper>

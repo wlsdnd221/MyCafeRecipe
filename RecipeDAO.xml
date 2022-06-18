@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycafe.recipe.RecipeService">
+<!-- DB와 변수연결 -->
+<resultMap type="com.mycafe.recipe.RecipeDTO" id="rdto">
+	<result property="num" column="num"/>
+	<result property="rec1" column="rec1"/>
+	<result property="rec2" column="rec2"/>
+	<result property="rec3" column="rec3"/>
+	<result property="rec4" column="rec4"/>
+	<result property="rec5" column="rec5"/>
+	<result property="rec6" column="rec6"/>
+</resultMap>
+
+<resultMap type="com.mycafe.recipe.RecipeBoardDTO" id="rbdto">
+	<result property="num" column="num"/>
+	<result property="writer" column="writer"/>
+	<result property="cafe" column="cafe"/>
+	<result property="title" column="title"/>
+	<result property="picture" column="picture"/>
+	<result property="content" column="content"/>
+	<result property="writeday" column="writeday"/>
+	<result property="readcnt" column="readcnt"/>
+	<result property="groups" column="groups"/>
+	<result property="step" column="step"/>
+	<result property="indent" column="indent"/>
+	<collection property="rdto" resultMap="rdto"></collection>
+</resultMap>
+<!-- DB와 변수연결 종료-->
+
+<!-- 레시피등록 -->
+<insert id="rboard_enroll">
+	<selectKey keyProperty="num" resultType="int" order="BEFORE">
+		SELECT NVL(MAX(NUM), 0)+1 FROM CAFE_RBOARD
+	</selectKey>
+	INSERT INTO CAFE_RBOARD(NUM, WRITER, CAFE, TITLE, PICTURE, CONTENT, READCNT, GROUPS, STEP, INDENT) 
+	VALUES(#{num}, #{writer}, #{cafe}, #{title}, #{picture}, #{content}, 0, #{num}, 0, 0)
+</insert>
+<insert id="recipe_enroll">
+	INSERT INTO CAFE_RECIPE 
+	VALUES(#{param1}, #{param2}, #{param3}, #{param4}, #{param5}, #{param6}, #{param7})
+</insert>
+<!-- 레시피등록 종료-->
+
+<!-- 레시피목록 -->
+<!-- 총 레코드 수 -->
+<select id="totalrecord" resultType="int">
+	SELECT COUNT(NUM) FROM CAFE_RBOARD WHERE CAFE=#{param1}
+</select>
+<!-- 총 레코드 수 종료-->
+<select id="recipe_list" resultMap="rbdto">
+	SELECT * FROM (
+		SELECT ROWNUM RN, A.* FROM (
+			SELECT NUM, TITLE, WRITER, TO_CHAR(WRITEDAY, 'yyyy-mm-dd')WRITEDAY, READCNT, INDENT 
+			FROM CAFE_RBOARD WHERE CAFE=#{param1} 
+			ORDER BY GROUPS DESC, STEP ASC)A)
+	WHERE RN BETWEEN #{param2} AND #{param3}
+</select>
+<!-- 레시피목록 종료-->
+
+<!-- 레시피상세 -->
+<select id="recipe_detail" resultMap="rbdto">
+	SELECT B.*, R.* 
+	FROM CAFE_RBOARD B JOIN CAFE_RECIPE R ON B.NUM=R.NUM 
+	WHERE B.NUM=#{param1}
+</select>
+<update id="readcnt">
+	UPDATE CAFE_RBOARD SET READCNT=READCNT+1 WHERE NUM=#{param1}
+</update>
+<!-- 레시피상세 종료-->
+
+<!-- 레시피삭제 -->
+<delete id="rboard_delete">
+	DELETE FROM CAFE_RBOARD WHERE NUM=#{param1}
+</delete>
+<delete id="recipe_delete">
+	DELETE FROM CAFE_RECIPE WHERE NUM=#{param1}
+</delete>
+<!-- 레시피삭제 종료-->
+
+<!-- 레시피수정 -->
+<update id="rboard_modify">
+	UPDATE CAFE_RBOARD SET WRITER=#{param1}, CAFE=#{param2}, TITLE=#{param3}, CONTENT=#{param4} WHERE NUM=#{param5}
+</update>
+<update id="image_modify">
+	UPDATE CAFE_RBOARD SET PICTURE=#{param1} WHERE NUM=#{param2} 
+</update>
+<update id="recipe_modify">
+	UPDATE CAFE_RECIPE SET REC1=#{param1}, REC2=#{param2}, REC3=#{param3}, REC4=#{param4}, REC5=#{param5}, REC6=#{param6} WHERE NUM=#{param7}
+</update>
+<!-- 레시피수정 종료-->
+
+<!-- 답글달기 -->
+<!-- 답글순서를 위한 step설정 -->
+<update id="stepup">
+	UPDATE CAFE_RBOARD SET STEP=STEP+1 WHERE GROUPS=#{param1} AND STEP>#{param2}
+</update>
+<!-- 답글순서를 위한 step설정 종료-->
+<insert id="rboard_reply">
+	<selectKey keyProperty="num" resultType="int" order="BEFORE">
+		SELECT NVL(MAX(NUM), 0)+1 FROM CAFE_RBOARD
+	</selectKey>
+	INSERT INTO CAFE_RBOARD(NUM, WRITER, CAFE, TITLE, PICTURE, CONTENT, READCNT, GROUPS, STEP, INDENT) 
+	VALUES(#{num}, #{writer}, #{cafe}, #{title}, #{picture}, #{content}, 0, #{groups}, #{step}, #{indent})
+</insert>
+<!-- 답글달기 종료-->
+
+<!-- 레시피검색 -->
+<select id="recipe_search" resultMap="rbdto">
+	SELECT NUM, TITLE, WRITER, TO_CHAR(WRITEDAY, 'yyyy-mm-dd')WRITEDAY, READCNT, INDENT FROM CAFE_RBOARD 
+	WHERE CAFE=#{param1} 
+		<choose>
+			<when test='param2 eq "title".toString()'>
+			AND TITLE LIKE '%' || #{param3} || '%'
+			</when>
+			<when test='param2 eq "writer".toString()'>
+			AND WRITER LIKE '%' || #{param3} || '%'
+			</when>
+		</choose>
+	ORDER BY GROUPS DESC, STEP ASC
+</select>
+<!-- 레시피검색 종료-->
+
+</mapper>
