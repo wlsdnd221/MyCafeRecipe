@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.mycafe.main.Service">
+<resultMap type="com.mycafe.main.NoticeDTO" id="nodto">
+	<result property="num" column="num"/>
+	<result property="writer" column="writer"/>
+	<result property="title" column="title"/>
+	<result property="picture" column="picture"/>
+	<result property="content" column="content"/>
+	<result property="writeday" column="writeday"/>
+	<result property="readcnt" column="readcnt"/>
+</resultMap>
+
+<!-- 공지사항등록-->
+<insert id="notice_enroll">
+	INSERT INTO CAFE_NOTICE(NUM, WRITER, TITLE, PICTURE, CONTENT, READCNT) 
+	VALUES(CAFE_NOTICE_SEQ.NEXTVAL, #{param1}, #{param2}, #{param3}, #{param4}, 0)
+</insert>
+<!-- 공지사항등록 종료 -->
+
+<!-- 공지사항목록 -->
+<!-- 총 레코드 수 -->
+<select id="totalrecord" resultType="int">
+	SELECT COUNT(NUM) FROM CAFE_NOTICE
+</select>
+<!-- 총 레코드 수 종료-->
+<select id="notice_list" resultMap="nodto">
+	SELECT * FROM(
+	    SELECT ROWNUM RN, A.* FROM(
+			SELECT NUM, WRITER, TITLE, TO_CHAR(WRITEDAY, 'yyyy-mm-dd')WRITEDAY, READCNT  
+			FROM CAFE_NOTICE ORDER BY NUM DESC)A)
+	WHERE RN BETWEEN #{param1} AND #{param2}
+</select>
+<!-- 공지사항목록 종료 -->
+
+<!-- 공지사항상세 -->
+<select id="notice_detail" resultMap="nodto">
+	SELECT * FROM CAFE_NOTICE WHERE NUM=#{param1}
+</select>
+<update id="readcnt">
+	UPDATE CAFE_NOTICE SET READCNT=READCNT+1 WHERE NUM=#{param1}
+</update>
+<!-- 공지사항상세 종료-->
+
+<!-- 공지사항삭제 -->
+<delete id="notice_delete">
+	DELETE FROM CAFE_NOTICE WHERE NUM=#{param1}
+</delete>
+<!-- 공지사항삭제 종료-->
+
+<!-- 공지사항수정 -->
+<update id="notice_modify">
+	UPDATE CAFE_NOTICE SET WRITER=#{param1}, TITLE=#{param2}, CONTENT=#{param3} WHERE NUM=#{param4}
+</update>
+<update id="image_modify">
+	UPDATE CAFE_NOTICE SET PICTURE=#{param1} WHERE NUM=#{param2}
+</update>
+<!-- 공지사항수정 종료-->
+
+<!-- 공지사항검색 -->
+<select id="notice_search" resultMap="nodto">
+	SELECT NUM, WRITER, TITLE, TO_CHAR(WRITEDAY, 'yyyy-mm-dd')WRITEDAY, READCNT FROM CAFE_NOTICE 
+	WHERE 
+		<choose>
+			<when test='param1 eq "title".toString()'>
+			TITLE LIKE '%' || #{param2} || '%' 
+			</when>
+			<when test='param1 eq "writer".toString()'>
+			WRITER LIKE '%' || #{param2} || '%' 
+			</when>
+		</choose>
+	ORDER BY NUM DESC
+</select>
+<!-- 공지사항검색 종료-->
+
+</mapper>
