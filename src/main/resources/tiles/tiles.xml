@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tiles-definitions PUBLIC
+"-//Apache Software Foundation//DTD Tiles Configuration 2.0//EN"
+"http://tiles.apache.org/dtds/tiles-config_2_0.dtd">
+<tiles-definitions>
+	<!-- 반복출력 화면 -->
+	<definition name="baseLayout"  template="/WEB-INF/views/layout.jsp">
+    	<put-attribute name="title" value="" />
+    	<put-attribute name="top" value="/WEB-INF/views/top.jsp" />
+        <put-attribute name="body" value="" />
+        <put-attribute name="footer" value="/WEB-INF/views/footer.jsp" />
+    </definition>
+
+	<!-- 계속 바뀌는 화면 -->
+    <definition name="main" extends="baseLayout">
+        <put-attribute name="title" value="메인페이지" />
+        <put-attribute name="body" value="/WEB-INF/views/main.jsp" />
+    </definition>
+    <definition name="application_form" extends="baseLayout">
+        <put-attribute name="title" value="회원가입" />
+        <put-attribute name="body" value="/WEB-INF/views/application_form.jsp" />
+    </definition>
+    <definition name="cafe_menu_list" extends="baseLayout">
+        <put-attribute name="title" value="카페메뉴" />
+        <put-attribute name="body" value="/WEB-INF/views/cafe_menu_list.jsp" />
+    </definition>
+    <definition name="cafe_menu_input" extends="baseLayout">
+        <put-attribute name="title" value="카페메뉴등록" />
+        <put-attribute name="body" value="/WEB-INF/views/cafe_menu_input.jsp" />
+    </definition>
+    <definition name="cafe_menu_detail" extends="baseLayout">
+        <put-attribute name="title" value="카페메뉴상세" />
+        <put-attribute name="body" value="/WEB-INF/views/cafe_menu_detail.jsp" />
+    </definition>
+    <definition name="cafe_menu_modify" extends="baseLayout">
+        <put-attribute name="title" value="카페메뉴수정" />
+        <put-attribute name="body" value="/WEB-INF/views/cafe_menu_modify.jsp" />
+    </definition>
+    <definition name="notice_list" extends="baseLayout">
+        <put-attribute name="title" value="공지사항" />
+        <put-attribute name="body" value="/WEB-INF/views/notice_list.jsp" />
+    </definition>
+    <definition name="notice_input" extends="baseLayout">
+        <put-attribute name="title" value="공지사항작성" />
+        <put-attribute name="body" value="/WEB-INF/views/notice_input.jsp" />
+    </definition>
+    <definition name="notice_detail" extends="baseLayout">
+        <put-attribute name="title" value="공지사항상세" />
+        <put-attribute name="body" value="/WEB-INF/views/notice_detail.jsp" />
+    </definition>
+    <definition name="notice_modify" extends="baseLayout">
+        <put-attribute name="title" value="공지사항수정" />
+        <put-attribute name="body" value="/WEB-INF/views/notice_modify.jsp" />
+    </definition>
+    <definition name="recipe_list" extends="baseLayout">
+        <put-attribute name="title" value="레시피목록" />
+        <put-attribute name="body" value="/WEB-INF/views/recipe_list.jsp" />
+    </definition>
+    <definition name="recipe_input" extends="baseLayout">
+        <put-attribute name="title" value="레시피등록" />
+        <put-attribute name="body" value="/WEB-INF/views/recipe_input.jsp" />
+    </definition>
+    <definition name="recipe_detail" extends="baseLayout">
+        <put-attribute name="title" value="레시피상세" />
+        <put-attribute name="body" value="/WEB-INF/views/recipe_detail.jsp" />
+    </definition>
+    <definition name="recipe_modify" extends="baseLayout">
+        <put-attribute name="title" value="레시피수정" />
+        <put-attribute name="body" value="/WEB-INF/views/recipe_modify.jsp" />
+    </definition>
+    <definition name="recipe_reply" extends="baseLayout">
+        <put-attribute name="title" value="레시피답글" />
+        <put-attribute name="body" value="/WEB-INF/views/recipe_reply.jsp" />
+    </definition>
+    <definition name="map" extends="baseLayout">
+        <put-attribute name="title" value="내주변카페찾기"/>
+        <put-attribute name="body" value="/WEB-INF/views/map.jsp" />
+    </definition>
+    <definition name="guide" extends="baseLayout">
+        <put-attribute name="title" value="이용안내"/>
+        <put-attribute name="body" value="/WEB-INF/views/guide.jsp" />
+    </definition>
+</tiles-definitions>
